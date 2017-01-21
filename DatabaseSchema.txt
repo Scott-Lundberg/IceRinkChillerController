@@ -15,6 +15,7 @@ Table Type:
 Table Sensor:
 	SensorID Integer Keyfield
 	DeviceID Integer (foreign key in Device table)
+	Name string
 	MinValue Float
 	MaxValue Float
 	LongUnitOfMeasure	string
