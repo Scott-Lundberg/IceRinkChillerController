@@ -1,0 +1,27 @@
+/* A _Device is any component in the system, including sensors and relays.  
+	Basic properties and methods are declared here: logging, database setup/teardown, 
+		basic properties like Name, dbID, Type
+*/
+_Device {
+
+	Properties:
+		Name String
+		Location _Location()
+	
+	Methods:
+	
+	Create(Type):
+		Setup database information
+		Record DateTime of creation
+		set Active
+		return object
+		
+	Destroy(self):
+		Deactivate in Database
+		Record DateTime of Destruction
+
+	DefineLocation(self,Header,Pin,Address,SubAddress):
+		Create entry in Location table
+		Location = _Location.Create()
+		
+}

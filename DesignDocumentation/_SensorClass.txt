@@ -1,0 +1,10 @@
+/* Sensor class Create/Destroys sensor object.  Records logging data.  
+	Reads data on command 
+*/
+
+class _Sensor {
+
+
+
+
+}

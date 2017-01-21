@@ -1,0 +1,18 @@
+/* A type defines the basics of the hardware */
+
+_Type {
+
+	Name string
+	Manufacturer string
+	PartNumber string
+	
+	Create(Name,Manufacturer,PartNumber):
+		Create TypeID in db.Type
+		db.Type.Active = True
+		return object
+		
+	Destroy(self,Force=False):
+		Check db.Device for TypeID.  Error if exists unless Force=False
+		db.Type.Active = False
+	
+}
