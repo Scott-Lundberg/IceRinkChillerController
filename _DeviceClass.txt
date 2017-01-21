@@ -1,0 +1,14 @@
+/* A _Device is any component in the system, including sensors and relays.  
+	Basic properties and methods are declared here: logging, database setup/teardown, 
+		basic properties like Name, dbID, Type
+*/
+_Device {
+
+	Create(Type):
+		Setup database information
+		return object
+		
+	Destroy(self):
+		Tag Database 
+
+}
