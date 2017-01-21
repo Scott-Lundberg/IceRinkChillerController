@@ -4,7 +4,32 @@
 
 class _Sensor {
 
-
+	Identity Integer
+	Name string
+	Description string
+	Min Float
+	Max Float
+	UM string
+	Abb string(3)
+	
+	Create(Type, Name, Description, Min, Max, UM, Abb) overloads _Device:
+		self = _Device.Create(Name,Description)
+		set Min, Max, UM, Abb, Name, Description
+		write Properties to db.Sensor
+		self.Identity = db.Sensor.SensorID
+		db.Sensor.DeviceID = DeviceID
+		
+	Destroy(self):
+		_Device.Destroy(self)
+				
+	UpdateDisplay(self.ReadDevice):
+		print out value read from GPIO
+		
+	ResetDisplay():
+		Reset display to default values
+		
+	
+	
 
 
 }

@@ -2,6 +2,7 @@ Table Device:
 	DeviceID Integer Keyfield
 	Type Integer (foreign key in Type table)
 	Name string
+	Description string
 	Active Integer
 	CreateDateTime
 	LastActiveDateTime
@@ -20,10 +21,10 @@ Table Sensor:
 	MinValue Float
 	MaxValue Float
 	LongUnitOfMeasure	string
-	AbbUnitOfMeasure	char(3)
+	AbbUnitOfMeasure	char(3)	
 	
 Table Relay:
-	RelayID Integer Keyfield
+	RelayID Intege	r Keyfield
 	DeviceID Integer (foreign key in Device Table)
 	NormallyOpen Boolean
 	TotalRunTime Float
@@ -41,6 +42,7 @@ Table Location:
 Table Log:
 	LogID Integer Keyfield
 	DeviceID Integer (foreign key in Device table)
+	Description string
 	DateTimeStamp DateTime
 	DetailRecordCount Integer
 	

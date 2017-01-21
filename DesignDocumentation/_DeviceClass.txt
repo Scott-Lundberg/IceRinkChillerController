@@ -6,22 +6,44 @@ _Device {
 
 	Properties:
 		Name String
+		Description String
 		Location _Location()
+		DeviceID Integer
 	
 	Methods:
 	
-	Create(Type):
-		Setup database information
+	Create(Type,Name,Description):
+		self.Name = Name
+		self.Description = Description
+		Set database information
+		self.DeviceID = db.Device.DeviceID
 		Record DateTime of creation
 		set Active
+		LogMe("Create",[Name,Description,Device,"Create"])
 		return object
 		
 	Destroy(self):
 		Deactivate in Database
 		Record DateTime of Destruction
+		LogMe("Destroy",[Device,"Destroy"])
 
 	DefineLocation(self,Header,Pin,Address,SubAddress):
 		Create entry in Location table
 		Location = _Location.Create()
+		LogMe("DefineLocation",[Header,Pin,Address,SubAddress])
+		
+	ReadLocation(self,output:Value):
+		Call builtin GPIO read (Location.Address)
+		LogMe("ReadValue",[Location.LocationID,Value])
+		
+	WriteLocation(self,Value):
+		Call builtin GPIO write (Location.Address)
+		LogMe("WriteValue",[Location.LocationID,Value])
+		
+	LogMe(self,Description,Hash[field,value]):
+		LogID = Insert database entry(self.DeviceID,DateTimeStamp,Description)
+		Foreach Field in Hash[field]
+			LogDetailID = Insert LogDetails database entry(Field, Value)
+		Update database entry  db.Log.DetailRecordCount
 		
 }
