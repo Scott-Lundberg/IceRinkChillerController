@@ -27,7 +27,7 @@ class dbTable:
 	'Class that implements collections/tables, including inserts, updates, selects.  Requires SystemDB object exists.'
 
 	def __new__(dbclient,collection):
-		if !dbclient.ConnectionValid():
+		if not dbclient.ConnectionValid():
 			sys.exit("dbTable Class: Can't connection to Collection.  Database connection not valid.\n")
 			return None
 		else:

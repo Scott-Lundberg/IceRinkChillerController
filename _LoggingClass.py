@@ -1,5 +1,6 @@
 import sys
 import time
+from _DatabaseClass import *
 
 class Logger:
 	'Class that provides logging to database structures.  Tied to each device that needs logging so default header information can be provided.'
@@ -17,12 +18,12 @@ class Logger:
 
 	def LogEntry(self,in_dict):
 		#Input dictionary with {header:specific desc, details: [{line1},{line2},{line2},...]}
-		entry = {'DeviceID':self.deviceID,'Description':in_dict['header'],'DateTimeStamp':time.strftime(Logger._timeFormat),'DetailRecordCount':in_dict['details'].count}
+		entry = {'DeviceID':self.deviceID,'Description':in_dict['header'],'DateTimeStamp':time.strftime(Logger._timeFormat),'DetailRecordCount': len(in_dict['details'])}
 		headerID = self.dbHeaderTable.InsertOne(entry)
 		
 		#Detail entries, if they exist
-		for d in enumerate(in_dict['details']):
-			d['LogID'] = headerID
+		for i,j in enumerate(in_dict['details']):
+			in_dict['details'][i]['LogID'] = headerID
 	
 		detailIDs = self.dbDetailTable.InsertMany(in_dict['details'])
 		
