@@ -9,6 +9,7 @@ _Device {
 		Description String
 		Location _Location()
 		DeviceID Integer
+		dbTable String
 	
 	Methods:
 	
