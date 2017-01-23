@@ -47,4 +47,8 @@ class dbTable:
 	def FindById(self,recordID):
 		return self.collection.find_one({"_id": recordID})	
 
+	def FindByName(self,name):
+		return self.collection.find_one({'Name': name})
 
+	def UpdateOne(self,filter,record):
+		return self.collection.update_one(filter,record).modified_count
