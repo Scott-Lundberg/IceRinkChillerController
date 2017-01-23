@@ -1,6 +1,7 @@
 import pymongo
 import sys
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 class SystemDB:
 	'Class to implement a database for use for settings and logging'
@@ -45,7 +46,9 @@ class dbTable:
 		return self.collection.insert_many(listofrecords).inserted_ids
 
 	def FindById(self,recordID):
-		return self.collection.find_one({"_id": recordID})	
+		oid = ObjectId(recordID)
+		print oid
+		return self.collection.find_one({'_id': oid})
 
 	def FindByName(self,name):
 		return self.collection.find_one({'Name': name})
