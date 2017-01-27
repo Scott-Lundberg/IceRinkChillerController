@@ -47,11 +47,22 @@ class dbTable:
 
 	def FindById(self,recordID):
 		oid = ObjectId(recordID)
-		print oid
 		return self.collection.find_one({'_id': oid})
 
 	def FindByName(self,name):
 		return self.collection.find_one({'Name': name})
 
 	def UpdateOne(self,filter,record):
-		return self.collection.update_one(filter,record).modified_count
+		#filter out _id if it's in the record
+		if '_id' in record:
+			del(record['_id'])
+		if not isinstance(filter['_id'], ObjectId):
+			filter['_id']=ObjectId(filter['_id'])
+		result = self.collection.update_one(filter,{'$set':record}).modified_count
+		return (noRecord if result == None else result)
+			
+
+class noRecord:
+	modified_count = 0
+	matched_count = 0
+	
