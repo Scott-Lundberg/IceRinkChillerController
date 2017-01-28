@@ -1,7 +1,7 @@
 from _DatabaseClass import *
 from bson.objectid import ObjectId
 
-class DeviceType:
+class DeviceType(object):
 	'Class that defines the type of device: sensor, relay, etc.  Records information about hardware also.'
 
 	#Props = {'_id', 'Name', 'Manufacturer', 'PartNumber', 'Active'}
