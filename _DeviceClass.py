@@ -1,39 +1,67 @@
 from _DatabaseClass import *
-from bson.objectid import ObjectId
+from abc import ABCMeta, abstractmethod
 
 class Device(object):
 	'Base class that is used for all sensors, relay and the controller itself'
+    __metaclass__ = ABCMeta
 
-	#Props = {'_id', 'Name', 'Manufacturer', 'PartNumber', 'Active'}
+    def __init__(self,dbClient,Name):
+	## Assume that by now we have a connection to the appropriate database
+	self.dbtable = dbTable(dbClient,'Devices')
+	self.loaded = False
+	self.LoadDevice(Name)
 
-	def __init__(self,dbClient,Name):
-		## Assume that by now we have a connection to the appropriate database
-		self.dbtable = dbTable(dbClient,'Devices')
-		self.loaded = False
-		self.LoadDevice(Name)
+    @abstractmethod
+    def ValidateDevice(self):
+        ' Overridden method to make sure that our device has all properties required to operate'
+        pass
 
-	def CreateDevice(self,manufacturer,partnumber):
-		if not self.loaded:
-			self.Props['Manufacturer'] = manufacturer
-			self.Props['PartNumber'] = partnumber
+    def CreateDevice(self,minProps):
+        ' CreateDevice:  Creates a new device in memory.  Parameter minProps is a dictionary that contains the minimum properties required to create a device, typically a Name'
+	if not self.loaded:
+            del minProps['_id'] if minProps.has_key('_id')
+            self.Props.update(minProps)
+            self.Props['Active']=True if not minProps.has_key('Active')
 			self.Props['_id'] = self.dbtable.InsertOne(self.Props)
-			
+            if self.Props <> None:
+                self.loaded = True
+                return True
+            else:
+                return False
+        else:
+            return self.ChangeProperty(minProps)
+
+    def RemoveDevice(self):
+        ' Removes a device from the system.  Just sets active to False in the Properties '
+        if self.loaded:
+            self.ChangeProperty({'Active': False})
+            self.SaveDevice()
+            del self.Props
+            return True
+        else:
+            return False
+
+    def DefineLocation(self,Header,Pin,Address,Register):
+        ' Setup GPIO or I2C output '
 		
-	def ChangeProperty(self, property, value):
-		self.Props[property]=value
-		self.SaveDevice()
+    def ChangeProperty(self, changingProps):
+        ' Updates properties in the device"s dictionary, then saves to the database for future persistence '
+        return False if type(changingProps) <> dict
+	self.Props[property].update(changingProps)
+	self.SaveDevice()
+        return True
 
-	def LoadDevice(self,name):
-		self.Props = self.dbtable.FindByName(name)
-		## In case the Find returns None, then we at least have the name to create a new device
-		if self.Props == None:
-			self.Props = {'Name': name}
-		else:
-			self.loaded = True
+    def LoadDevice(self,name):
+        ' Loads device settings/Props from the database '
+	self.Props = self.dbtable.FindByName(name)
+	## In case the Find returns None, then we at least have the name to create a new device
+	if self.Props == None:
+            return self.CreateDevice({'Name': name})
+	else:
+            self.loaded = True
+            return True
 
-	def SaveDevice(self):
-		result = self.dbtable.UpdateOne({'_id': self.Props['_id']},self.Props)
-		print result.matched_count
-		print result.modified_count
-		return result
+    def SaveDevice(self):
+	result = self.dbtable.UpdateOne({'_id': self.Props['_id']},self.Props)
+        return (True if result.modified_count > 0 else False)
 	
