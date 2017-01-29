@@ -1,6 +1,6 @@
 /* A type defines the basics of the hardware */
 
-_Type {
+_DeviceType {
 
 	Name string
 	Manufacturer string
