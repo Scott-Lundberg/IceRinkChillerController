@@ -1,0 +1,18 @@
+Compressor Module contains:
+High pressure sensor
+Low pressure sensor
+High temp
+low temp
+oil pressure
+oil temperature
+
+
+Chiller module contains:
+liquid temp
+gas temp
+sight glass level
+EXV control
+Liquid Line Solenoid
+
+
+
