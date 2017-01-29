@@ -32,12 +32,14 @@ Table Relay:
 	Cycles Integer
 	NominalVoltage Float
 	
-Table Location:
+Table InterfaceLocation:
 	LocationID Integer Keyfield
+	Type [GPIO,I2C,PWM]
 	Header Hex
-	Pin Integer
-	Address Hex
-	SubAddress Hex (might be needed if using I2C)	
+	GPIOPins list[Pin1,Pin2,...]
+	I2C Bus [0,1,2] depends on results from i2cdetect
+	I2CAddress Hex
+	I2CRegister Hex 
 	
 Table Log:
 	LogID Integer Keyfield
