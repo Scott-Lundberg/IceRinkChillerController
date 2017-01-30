@@ -28,6 +28,17 @@ sight glass level
 EXV control
 Liquid Line Solenoid
 
+Pump module contains:
+Flow sensor
+Pressure sensor
+Contactor 1
+Contactor 2
+Contactor 3
+Contactor 4
+Position sensor 1
+Position sensor 2
+Position sensor 3
+
 
 Condensor module contains:
 high temp
@@ -44,3 +55,9 @@ Command & Control
 DHCP server
 Centralized Logging
 Display
+Room temperature
+Rink Temperature 1
+Rink Temperature 2
+Rink Temperature 3
+Outside Temperature
+Rink humidity
