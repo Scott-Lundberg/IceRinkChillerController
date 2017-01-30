@@ -1,3 +1,5 @@
+Using MQTT over an ethernet network, each module is responsible for a self-contained portion of the system
+
 Compressor Module contains:
 High pressure sensor
 Low pressure sensor
@@ -5,7 +7,19 @@ High temp
 low temp
 oil pressure
 oil temperature
-
+Contactor1 control 
+Contactor2 control (for soft-start/part-wind start)
+AuxContactor1 control (sump heaters etc)
+OPTIONAL:
+	AuxContactor2 control
+	AuxContactor3 control
+	Phase A Current meter
+	Phase A voltage meter
+	Phase B Current meter
+	Phase B voltage meter
+	Phase C Current meter
+	Phase C voltage meter
+	
 
 Chiller module contains:
 liquid temp
@@ -15,4 +29,18 @@ EXV control
 Liquid Line Solenoid
 
 
+Condensor module contains:
+high temp
+low temp
+incoming cooling medium
+outgoing cooling medium
+Level1 cooling solenoid
+Level2 cooling solenoid
+Level3 cooling solenoid
 
+
+System Module
+Command & Control
+DHCP server
+Centralized Logging
+Display
