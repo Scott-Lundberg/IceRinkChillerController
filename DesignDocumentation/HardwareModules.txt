@@ -1,0 +1,63 @@
+Using MQTT over an ethernet network, each module is responsible for a self-contained portion of the system
+
+Compressor Module contains:
+High pressure sensor
+Low pressure sensor
+High temp
+low temp
+oil pressure
+oil temperature
+Contactor1 control 
+Contactor2 control (for soft-start/part-wind start)
+AuxContactor1 control (sump heaters etc)
+OPTIONAL:
+	AuxContactor2 control
+	AuxContactor3 control
+	Phase A Current meter
+	Phase A voltage meter
+	Phase B Current meter
+	Phase B voltage meter
+	Phase C Current meter
+	Phase C voltage meter
+	
+
+Chiller module contains:
+liquid temp
+gas temp
+sight glass level
+EXV control
+Liquid Line Solenoid
+
+Pump module contains:
+Flow sensor
+Pressure sensor
+Contactor 1
+Contactor 2
+Contactor 3
+Contactor 4
+Position sensor 1
+Position sensor 2
+Position sensor 3
+
+
+Condensor module contains:
+high temp
+low temp
+incoming cooling medium
+outgoing cooling medium
+Level1 cooling solenoid
+Level2 cooling solenoid
+Level3 cooling solenoid
+
+
+System Module
+Command & Control
+DHCP server
+Centralized Logging
+Display
+Room temperature
+Rink Temperature 1
+Rink Temperature 2
+Rink Temperature 3
+Outside Temperature
+Rink humidity
