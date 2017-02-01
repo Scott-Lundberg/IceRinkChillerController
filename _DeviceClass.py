@@ -1,5 +1,6 @@
 from _DatabaseClass import *
 from abc import ABCMeta, abstractmethod
+from Adafruit_I2C import Adafruit_I2C
 
 class Device(object):
 	'Base class that is used for all sensors, relay and the controller itself'
@@ -41,8 +42,24 @@ class Device(object):
         else:
             return False
 
-    def DefineLocation(self,Header,Pin,Address,Register):
-        ' Setup GPIO or I2C output '
+    def DefineInterface(self,interface):
+        self.Props['IOInterface'] = interface
+        self.SaveDevice()
+
+    def SetupInterface(self):
+        ' Setup GPIO or I2C i/o. self.props[IOInterface] contains a dictionary with appropriate values '
+        if self.Props['IOInterface']['type'] == 'I2C':
+            ## Need bus number and address to setup I2C interface
+            ## Also need to know whether we are reading 8 or 16 bits signed/unsigned
+            self.interface = Adafruit_I2C(self.Props['IOInterface']['address'])
+
+        elif self.Props['IOInterface']['type'] == 'GPIO':
+
+        elif self.Props['IOInterface']['type'] == '1-Wire':
+            pass  ##TBD
+
+        elif self.Props['IOInterface']['type'] == 'SPI':
+            pass  ##TBD
 		
     def ChangeProperty(self, changingProps):
         ' Updates properties in the device"s dictionary, then saves to the database for future persistence '
