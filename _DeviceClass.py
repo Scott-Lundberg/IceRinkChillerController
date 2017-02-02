@@ -1,6 +1,8 @@
 from _DatabaseClass import *
 from abc import ABCMeta, abstractmethod
 from Adafruit_I2C import Adafruit_I2C
+from Adafruit_BBIO.GPIO as GPIO
+from Adafruit_BBIO.PWM as PWM
 
 class Device(object):
 	'Base class that is used for all sensors, relay and the controller itself'
@@ -43,17 +45,23 @@ class Device(object):
             return False
 
     def DefineInterface(self,interface):
+        """Method attaches metadata necessary to start I/O. Saves it in the database for later use
+        
+            Currently supports I2C and GPIO.  Dictionary items must be as follows:
+            I2C{'type':'I2C', 'address':'<Hex string of address of device>', 'bus':'<bus number', 'signedint':'<True/False>', 'numberofbits': '##'}
+            GPIO{'type': 'GPIO', 'header':'<P9 or P8>', 'pin':'<pin number>'
+            """
         self.Props['IOInterface'] = interface
         self.SaveDevice()
 
     def SetupInterface(self):
-        ' Setup GPIO or I2C i/o. self.props[IOInterface] contains a dictionary with appropriate values '
+        """Method uses Adafruit library to setup connections on IO pins. """
+        
         if self.Props['IOInterface']['type'] == 'I2C':
-            ## Need bus number and address to setup I2C interface
-            ## Also need to know whether we are reading 8 or 16 bits signed/unsigned
             self.interface = Adafruit_I2C(self.Props['IOInterface']['address'])
 
         elif self.Props['IOInterface']['type'] == 'GPIO':
+            self.interface = self.Props['IOInterface']['header']+'_'+str(self.Props['IOInterface']['pin'])
 
         elif self.Props['IOInterface']['type'] == '1-Wire':
             pass  ##TBD
