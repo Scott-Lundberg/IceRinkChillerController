@@ -1,4 +1,5 @@
 from _DatabaseClass import *
+from _LoggingClass import *
 from abc import ABCMeta, abstractmethod
 from Adafruit_I2C import Adafruit_I2C
 from Adafruit_BBIO.GPIO as GPIO
@@ -13,6 +14,7 @@ class Device(object):
 	self.dbtable = dbTable(dbClient,'Devices')
 	self.loaded = False
 	self.LoadDevice(Name)
+        self.log = Logger(dbClient,self.Props)
 
     @abstractmethod
     def ValidateDevice(self):
@@ -23,6 +25,7 @@ class Device(object):
         ' CreateDevice:  Creates a new device in memory.  Parameter minProps is a dictionary that contains the minimum properties required to create a device, typically a Name'
 	if not self.loaded:
             del minProps['_id'] if minProps.has_key('_id')
+            self.Props['collection'] = 'Devicelog'
             self.Props.update(minProps)
             self.Props['Active']=True if not minProps.has_key('Active')
 			self.Props['_id'] = self.dbtable.InsertOne(self.Props)
@@ -49,7 +52,7 @@ class Device(object):
         
             Currently supports I2C and GPIO.  Dictionary items must be as follows:
             I2C{'type':'I2C', 'address':'<Hex string of address of device>', 'bus':'<bus number', 'signedint':'<True/False>', 'numberofbits': '##'}
-            GPIO{'type': 'GPIO', 'header':'<P9 or P8>', 'pin':'<pin number>'
+            GPIO{'type': 'GPIO', 'header':'<P9 or P8>', 'pin':'<pin number>', 'IODirection': '<OUT|IN>'}
             """
         self.Props['IOInterface'] = interface
         self.SaveDevice()
@@ -62,13 +65,25 @@ class Device(object):
 
         elif self.Props['IOInterface']['type'] == 'GPIO':
             self.interface = self.Props['IOInterface']['header']+'_'+str(self.Props['IOInterface']['pin'])
+            GPIO.setup(self.interface, self.Props['IOInterface']['IODirection'])
 
         elif self.Props['IOInterface']['type'] == '1-Wire':
             pass  ##TBD
 
         elif self.Props['IOInterface']['type'] == 'SPI':
             pass  ##TBD
-		
+
+    def LogEntry(self,entry):
+       """Make a log entry for this Device
+            entry contains {header:specific desc, details: [{line1},{line2},{line2},...]}"""
+       self.log(entry) 
+        
+    def ClearInterface(self):
+        ' Removes references to external interface libraries and/or runs a tear-down function from the library '
+        if self.Props['IOInterface']['type'] == 'GPIO':
+            GPIO.cleanup()
+        self.interface = None
+ 	
     def ChangeProperty(self, changingProps):
         ' Updates properties in the device"s dictionary, then saves to the database for future persistence '
         return False if type(changingProps) <> dict

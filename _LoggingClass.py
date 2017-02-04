@@ -11,13 +11,18 @@ class Logger:
 		
 	## Needs instantiated database table/collection to operate 
 	def __init__(self,dbclient,device):
+            """Creates a Logging object to be used for database recording of data
+                
+                dbclient is a reference to an instantiated database object
+                device is a dict from the _DeviceClass Props must contain an _id and collection item
+            """
 		self.device = device
-		self.deviceID = self.device.identity
-		self.dbHeaderTable = dbTable(dbclient,self.device.collection)
-		self.dbDetailTable = dbTable(dbclient,self.device.collection+'Detail')
+		self.deviceID = device['_id']
+		self.dbHeaderTable = dbTable(dbclient,device['collection'])
+		self.dbDetailTable = dbTable(dbclient,device['collection']+'Detail')
 
 	def LogEntry(self,in_dict):
-		#Input dictionary with {header:specific desc, details: [{line1},{line2},{line2},...]}
+		"""in_dict contains {header:specific desc, details: [{line1},{line2},{line2},...]}"""
 		entry = {'DeviceID':self.deviceID,'Description':in_dict['header'],'DateTimeStamp':time.strftime(Logger._timeFormat),'DetailRecordCount': len(in_dict['details'])}
 		headerID = self.dbHeaderTable.InsertOne(entry)
 		
