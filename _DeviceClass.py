@@ -9,12 +9,16 @@ class Device(object):
 	'Base class that is used for all sensors, relay and the controller itself'
     __metaclass__ = ABCMeta
 
-    def __init__(self,dbClient,Name):
+    def __new__(self,dbClient,Name):
 	## Assume that by now we have a connection to the appropriate database
 	self.dbtable = dbTable(dbClient,'Devices')
 	self.loaded = False
 	self.LoadDevice(Name)
         self.log = Logger(dbClient,self.Props)
+        return self
+
+    def __init(self):
+        pass
 
     @abstractmethod
     def ValidateDevice(self):
@@ -76,7 +80,7 @@ class Device(object):
     def LogEntry(self,entry):
        """Make a log entry for this Device
             entry contains {header:specific desc, details: [{line1},{line2},{line2},...]}"""
-       self.log(entry) 
+       self.log.LogEntry(entry) 
         
     def ClearInterface(self):
         ' Removes references to external interface libraries and/or runs a tear-down function from the library '

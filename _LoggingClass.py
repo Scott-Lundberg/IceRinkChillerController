@@ -11,11 +11,11 @@ class Logger:
 		
 	## Needs instantiated database table/collection to operate 
 	def __init__(self,dbclient,device):
-            """Creates a Logging object to be used for database recording of data
+        """Creates a Logging object to be used for database recording of data
                 
-                dbclient is a reference to an instantiated database object
-                device is a dict from the _DeviceClass Props must contain an _id and collection item
-            """
+           dbclient is a reference to an instantiated database object
+           device is a dict from the _DeviceClass Props must contain an _id and collection item
+        """
 		self.device = device
 		self.deviceID = device['_id']
 		self.dbHeaderTable = dbTable(dbclient,device['collection'])
