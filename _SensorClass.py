@@ -1,6 +1,7 @@
 from _DeviceClass import *
 from _Globals import *
 import time
+import thread
 
 def class Sensor(Device):
     """Class that implements any kind of sensor with a base class of Device. """
@@ -29,11 +30,10 @@ def class Sensor(Device):
             self.LogEntry({'Description': 'Validation failed during '+self.__name__+'.ReadDevice'})
             return None
         else
-            self.ReadInterface(1,0,self.LogEntry)
+            thread.start_new_thread(self.ReadInterface,(1,0,self.LogEntry))
 
     def LogEntry(self,data):
         """Takes raw data from a ReadInterface callback and puts it into a Loggable/MQTT format
         """
-
-        
-
+        logentry = {'Description': 'Data Read','details':[data]}
+        mqtt = {'Description': 'Data Read','details':[data], 'DeviceID': this.Props['DeviceID']}

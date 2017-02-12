@@ -1,6 +1,5 @@
 from _DatabaseClass import *
 from _LoggingClass import *
-import thread
 from abc import ABCMeta, abstractmethod
 from Adafruit_I2C import Adafruit_I2C
 from Adafruit_BBIO.GPIO as GPIO
@@ -80,7 +79,16 @@ class Device(object):
 
             Needs callback function to deliver results.  Parameters to callback are just the data
         """
-        pass
+        loopcounter = count
+        readbyte=0
+        while loopcounter > 0:
+            if self.Props['IOInterface']['type'] == 'I2C':
+                self.interface.readS8(readbyte)
+                callback(readbyte)
+            elif self.Props['IOInterface']['type'] == 'GPIO':
+                callback(GPIO.input(self.interface))
+            loopcounter--
+            time.sleep(waittime) if waittime <> 0 
 
     def LogEntry(self,entry):
        """Make a log entry for this Device

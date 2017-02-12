@@ -1,19 +1,21 @@
 import pymongo
 import sys
+from _Globals import *
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-class SystemDB:
+class SystemDB(object):
 	'Class to implement a database for use for settings and logging'
 
 	_dbclient = None
 	_db = None
+        gb = Globals()
 
-	def __init__(self,interface='localhost',port=27017):
+	def __init__(self,interface=gb._DBInterface,port=gb._DBPort):
 		if SystemDB._dbclient == None:	
 			SystemDB._dbclient = MongoClient(interface,port)
 
-	def AttachDatabase(self,database='RinkController'):
+	def AttachDatabase(self,database=_Database):
 		if SystemDB._db == None:
 			SystemDB._db = SystemDB._dbclient[database]
 
@@ -25,7 +27,7 @@ class SystemDB:
 		return (True if _dbclient <> None else False)
 
 class dbTable:
-	'Class that implements collections/tables, including inserts, updates, selects.  Requires SystemDB object exists.'
+	"""Class that implements collections/tables, including inserts, updates, selects.  Requires SystemDB object exists."""
 
 	def __new__(dbclient,collection):
 		if not dbclient.ConnectionValid():
