@@ -2,11 +2,11 @@ from _DatabaseClass import *
 from _LoggingClass import *
 from abc import ABCMeta, abstractmethod
 from Adafruit_I2C import Adafruit_I2C
-from Adafruit_BBIO.GPIO as GPIO
-from Adafruit_BBIO.PWM as PWM
+import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_BBIO.PWM as PWM
 
 class Device(object):
-	'Base class that is used for all sensors, relay and the controller itself'
+    """Base class that is used for all sensors, relay and the controller itself"""
     __metaclass__ = ABCMeta
 
     def __init__(self,dbClient,Name):
@@ -25,12 +25,14 @@ class Device(object):
     def CreateDevice(self,minProps):
         ' CreateDevice:  Creates a new device in memory.  Parameter minProps is a dictionary that contains the minimum properties required to create a device, typically a Name'
 	if not self.loaded:
-            del minProps['_id'] if minProps.has_key('_id')
+            if minProps.has_key('_id'): 
+                del minProps['_id'] 
             self.Props['collection'] = 'Devicelog'
             self.Props.update(minProps)
-            self.Props['Active']=True if not minProps.has_key('Active')
-			self.Props['_id'] = self.dbtable.InsertOne(self.Props)
-            if self.Props <> None:
+            if not minProps.has_key('Active'):
+                self.Props['Active']=True 
+	    self.Props['_id'] = self.dbtable.InsertOne(self.Props)
+            if self.Props['_id'] <> None:
                 self.loaded = True
                 return True
             else:
@@ -87,11 +89,12 @@ class Device(object):
                 callback(readbyte)
             elif self.Props['IOInterface']['type'] == 'GPIO':
                 callback(GPIO.input(self.interface))
-            loopcounter--
-            time.sleep(waittime) if waittime <> 0 
+            loopcounter -= 1
+            if waittime <> 0:
+                time.sleep(waittime) 
 
     def LogEntry(self,entry):
-       """Make a log entry for this Device
+        """Make a log entry for this Device
             entry contains {Description:specific desc, details: [{line1},{line2},{line2},...]}
             this function will add DeviceID
         """
@@ -108,7 +111,8 @@ class Device(object):
     def ChangeProperty(self, changingProps):
         """Updates properties in the device"s dictionary, then saves to the database for future persistence
         """
-        return False if type(changingProps) <> dict
+        if type(changingProps) <> dict:
+            return False
 	self.Props[property].update(changingProps)
 	self.SaveDevice()
         return True

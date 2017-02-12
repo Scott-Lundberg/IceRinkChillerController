@@ -1,9 +1,10 @@
 from _DeviceClass import *
 from _Globals import *
+from _MessageClass import *
 import time
 import thread
 
-def class Sensor(Device):
+class Sensor(Device):
     """Class that implements any kind of sensor with a base class of Device. """
 
     def __init__(self,dbClient,Name,cycletime, mode='event'):
@@ -29,7 +30,7 @@ def class Sensor(Device):
         if not self.ValidateDevice():
             self.LogEntry({'Description': 'Validation failed during '+self.__name__+'.ReadDevice'})
             return None
-        else
+        else:
             thread.start_new_thread(self.ReadInterface,(1,0,self.LogEntry))
 
     def LogEntry(self,data):

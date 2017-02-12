@@ -15,7 +15,7 @@ class SystemDB(object):
 		if SystemDB._dbclient == None:	
 			SystemDB._dbclient = MongoClient(interface,port)
 
-	def AttachDatabase(self,database=_Database):
+	def AttachDatabase(self,database=gb._Database):
 		if SystemDB._db == None:
 			SystemDB._db = SystemDB._dbclient[database]
 

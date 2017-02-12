@@ -1,5 +1,6 @@
 import paho.mqtt.client as paho
 from _LoggingClass import *
+from _Globals import *
 
 class MClient():
     """Used to setup and send MQTT messages to a broker
@@ -8,6 +9,7 @@ class MClient():
         same instance
     """
     _Loglevel = ('MQTT_LOG_INFO',6, 'MQTT_LOG_NOTICE',5, 'MQTT_LOG_WARNING',4,'MQTT_LOG_ERR',3,'MQTT_LOG_DEBUG',7)
+    gb = Globals()
 
     def __init__(self,channel,logcallback,loglevel=4):
         self.mqttc = paho.Client()
@@ -23,13 +25,14 @@ class MClient():
 
         options is a dictionary with options as keys
         """
-        self.options = options if len(options) > 0
+        if len(options) > 0:
+            self.options = options 
 
     def GetOption(self,option,default):
         """Returns option if set, default if not set or key doesn't exist"""
         return default if not self.options.has_key(option) else self.options[option]
 
-    def Connect(self,broker="localhost",port=1883,heartbeat=60):
+    def Connect(self,broker=gb._MQTTBroker,port=gb._MQTTPort,heartbeat=60):
         """function to connect the client to a broker. 
 
             Takes in a broker host/ip, port number and maximum heartbeat period
