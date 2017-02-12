@@ -1,5 +1,6 @@
 from _DatabaseClass import *
 from _LoggingClass import *
+import thread
 from abc import ABCMeta, abstractmethod
 from Adafruit_I2C import Adafruit_I2C
 from Adafruit_BBIO.GPIO as GPIO
@@ -9,16 +10,13 @@ class Device(object):
 	'Base class that is used for all sensors, relay and the controller itself'
     __metaclass__ = ABCMeta
 
-    def __new__(self,dbClient,Name):
+    def __init__(self,dbClient,Name):
 	## Assume that by now we have a connection to the appropriate database
 	self.dbtable = dbTable(dbClient,'Devices')
 	self.loaded = False
 	self.LoadDevice(Name)
-        self.log = Logger(dbClient,self.Props)
-        return self
+        self.log = Logger(dbClient,self.Props['collection'])
 
-    def __init(self):
-        pass
 
     @abstractmethod
     def ValidateDevice(self):
@@ -77,26 +75,40 @@ class Device(object):
         elif self.Props['IOInterface']['type'] == 'SPI':
             pass  ##TBD
 
+    def ReadInterface(self,count,waittime,callback):
+        """Starts a loop with count times (0 for infinity) and a waittime between reads
+
+            Needs callback function to deliver results.  Parameters to callback are just the data
+        """
+        pass
+
     def LogEntry(self,entry):
        """Make a log entry for this Device
-            entry contains {header:specific desc, details: [{line1},{line2},{line2},...]}"""
-       self.log.LogEntry(entry) 
+            entry contains {Description:specific desc, details: [{line1},{line2},{line2},...]}
+            this function will add DeviceID
+        """
+        entry['DeviceID']=self.Props['DeviceID']
+        self.log.LogEntry(entry) 
         
     def ClearInterface(self):
-        ' Removes references to external interface libraries and/or runs a tear-down function from the library '
+        """Removes references to external interface libraries and/or runs a tear-down function from the library 
+        """
         if self.Props['IOInterface']['type'] == 'GPIO':
             GPIO.cleanup()
         self.interface = None
  	
     def ChangeProperty(self, changingProps):
-        ' Updates properties in the device"s dictionary, then saves to the database for future persistence '
+        """Updates properties in the device"s dictionary, then saves to the database for future persistence
+        """
         return False if type(changingProps) <> dict
 	self.Props[property].update(changingProps)
 	self.SaveDevice()
         return True
 
     def LoadDevice(self,name):
-        ' Loads device settings/Props from the database '
+        """Loads device settings/Props from the database
+        """
+
 	self.Props = self.dbtable.FindByName(name)
 	## In case the Find returns None, then we at least have the name to create a new device
 	if self.Props == None:
