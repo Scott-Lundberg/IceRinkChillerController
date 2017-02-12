@@ -1,6 +1,6 @@
 dependencies 
 
-phao.mqtt.python
+paho.mqtt.python
 mosquitto (only on the main controller)
 libwebsockets
 
