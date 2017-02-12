@@ -13,6 +13,7 @@ class Device(object):
 	## Assume that by now we have a connection to the appropriate database
 	self.dbtable = dbTable(dbClient,'Devices')
 	self.loaded = False
+        self.stopread = False
 	self.LoadDevice(Name)
         self.log = Logger(dbClient,self.Props['collection'])
 
@@ -24,11 +25,11 @@ class Device(object):
 
     def CreateDevice(self,minProps):
         ' CreateDevice:  Creates a new device in memory.  Parameter minProps is a dictionary that contains the minimum properties required to create a device, typically a Name'
+        if minProps.has_key('_id'): 
+            del minProps['_id'] 
 	if not self.loaded:
-            if minProps.has_key('_id'): 
-                del minProps['_id'] 
-            self.Props['collection'] = 'Devicelog'
             self.Props.update(minProps)
+            self.Props['collection'] = 'Devicelog'
             if not minProps.has_key('Active'):
                 self.Props['Active']=True 
 	    self.Props['_id'] = self.dbtable.InsertOne(self.Props)
@@ -68,7 +69,7 @@ class Device(object):
 
         elif self.Props['IOInterface']['type'] == 'GPIO':
             self.interface = self.Props['IOInterface']['header']+'_'+str(self.Props['IOInterface']['pin'])
-            GPIO.setup(self.interface, self.Props['IOInterface']['IODirection'])
+            GPIO.setup(self.interface, eval('GPIO.'+self.Props['IOInterface']['IODirection']))
 
         elif self.Props['IOInterface']['type'] == '1-Wire':
             pass  ##TBD
@@ -76,29 +77,35 @@ class Device(object):
         elif self.Props['IOInterface']['type'] == 'SPI':
             pass  ##TBD
 
-    def ReadInterface(self,count,waittime,callback):
+    def ReadInterface(self,count,waittime,valuestoread,callback):
         """Starts a loop with count times (0 for infinity) and a waittime between reads
 
             Needs callback function to deliver results.  Parameters to callback are just the data
         """
-        loopcounter = count
+        loopcounter = count-1
         readbyte=0
-        while loopcounter > 0:
+        while loopcounter <> 0 and not self.stopread:
             if self.Props['IOInterface']['type'] == 'I2C':
                 self.interface.readS8(readbyte)
-                callback(readbyte)
+                callback({'data': [readbyte]})
             elif self.Props['IOInterface']['type'] == 'GPIO':
-                callback(GPIO.input(self.interface))
+                callback({'data': GPIO.input(self.interface)})
             loopcounter -= 1
             if waittime <> 0:
-                time.sleep(waittime) 
+                time.sleep(waittime/1000) 
+
+    def StopRead(self):
+        """Sets self.stopread to True so that any sensor reading loops will stop
+        """
+        self.stopread = True
+        self.ClearInterface()
 
     def LogEntry(self,entry):
         """Make a log entry for this Device
             entry contains {Description:specific desc, details: [{line1},{line2},{line2},...]}
             this function will add DeviceID
         """
-        entry['DeviceID']=self.Props['DeviceID']
+        entry['DeviceID']=self.Props['_id']
         self.log.LogEntry(entry) 
         
     def ClearInterface(self):
@@ -123,13 +130,17 @@ class Device(object):
 
 	self.Props = self.dbtable.FindByName(name)
 	## In case the Find returns None, then we at least have the name to create a new device
-	if self.Props == None:
+	if not isinstance(self.Props,dict):
+            self.Props = {}
             return self.CreateDevice({'Name': name})
 	else:
             self.loaded = True
             return True
 
     def SaveDevice(self):
-	result = self.dbtable.UpdateOne({'_id': self.Props['_id']},self.Props)
+        temp = self.Props.copy()
+        if temp.has_key('_id'):
+            del temp['_id']
+        result = self.dbtable.UpdateOne({'_id': self.Props['_id']},temp)
         return (True if result.modified_count > 0 else False)
 	

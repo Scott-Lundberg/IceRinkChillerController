@@ -20,21 +20,36 @@ class Sensor(Device):
 
     def ValidateDevice(self):
         """method to make sure the sensor has all that is needed to operate.  Interface to hardware, logging, etc"""
-        return self.Props.has_key('DeviceID')
+        return self.Props.has_key('_id')
 
-    def ReadDevice(self, numberOfValues=1,Timeout=5000,bytesToRead=1):
+    def ReadDevice(self, numberOfValues=1,Timeout=1000,bytesToRead=1):
         """method uses the configured interface to read a datapoint.  Returns a list of 1 or more values.
 
         Needs two parameters:  # of values to expect, timeout in milliseconds, # of bytes per read 
         """
         if not self.ValidateDevice():
-            self.LogEntry({'Description': 'Validation failed during '+self.__name__+'.ReadDevice'})
+            self.LogEntry({'Error': 'Validation failed during Sensor.ReadDevice'})
             return None
         else:
-            thread.start_new_thread(self.ReadInterface,(1,0,self.LogEntry))
+            self.lastread = None
+            thread.start_new_thread(self.ReadInterface,(numberOfValues,Timeout,bytesToRead,self.LogEntry))
 
-    def LogEntry(self,data):
-        """Takes raw data from a ReadInterface callback and puts it into a Loggable/MQTT format
+    def LogEntry(self,entry):
         """
-        logentry = {'Description': 'Data Read','details':[data]}
-        mqtt = {'Description': 'Data Read','details':[data], 'DeviceID': this.Props['DeviceID']}
+            Incoming data can be either Errors or data.  
+            Typically takes raw data from a ReadInterface callback and puts it into a Loggable/MQTT format
+        """
+        if self.mode == 'event' and entry['data'] == self.lastread:
+            pass
+        else:
+            if entry.has_key('Error'):
+                logentry = {'Description': 'Error:'+entry['Error']}
+                mqtt = {'Description': 'Error:'+entry['Error']}
+            else:
+                self.lastread = entry['data']
+                logentry = {'Description': 'Data Read','details':[{'data':entry['data']}]}
+                mqtt = {'Description': 'Data Read','details':[{'data':entry['data']}], 'DeviceID': self.Props['_id']}
+
+            super(Sensor, self).LogEntry(logentry)
+            print logentry
+        

@@ -16,7 +16,7 @@ class MClient():
         self.options = {}
         self.channel = channel
         self.loglevel = loglevel
-        self.mqttc.on_log = WriteLog
+        self.mqttc.on_log = self.WriteLog
         self.logcallback = logcallback
 
 

@@ -23,12 +23,16 @@ class Logger:
             """
             entry['DateTimeStamp'] = time.strftime(Logger._timeFormat)
             entry['DetailRecordCount'] = len(entry.get('details',[]))
-            headerID = self.dbHeaderTable.InsertOne(entry)
-		
+            temp = entry.copy()
+            if temp.has_key('details'):
+                del temp['details']
+            headerID = self.dbHeaderTable.InsertOne(temp)
+
             #Detail entries, if they exist
             for i,j in enumerate(entry['details']):
                 entry['details'][i]['LogID'] = headerID
             
             detailIDs = self.dbDetailTable.InsertMany(entry['details'])
+		
 		
 		
