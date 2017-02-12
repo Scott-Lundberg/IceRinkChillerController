@@ -14,7 +14,7 @@ _Device {
 	Methods:
 	
 	Create(Type,Name,Description):
-		self.Name = Name
+		self.Name = Namej
 		self.Description = Description
 		Set database information
 		self.DeviceID = db.Device.DeviceID
