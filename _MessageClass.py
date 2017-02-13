@@ -5,11 +5,10 @@ from _Globals import *
 class MClient():
     """Used to setup and send MQTT messages to a broker
         
-        the channel is specific to each instance, so you can't publish to one channel and subscribe to another with the
-        same instance
+       the channel is specific to each instance, so you can't publish to one channel and subscribe to another with the
+       same instance
     """
-    _Loglevel = ('MQTT_LOG_INFO',6, 'MQTT_LOG_NOTICE',5, 'MQTT_LOG_WARNING',4,'MQTT_LOG_ERR',3,'MQTT_LOG_DEBUG',7)
-    gb = Globals()
+    _Loglevel = {'1':('MQTT_LOG_INFO',6), '2': ('MQTT_LOG_NOTICE',5), '4':('MQTT_LOG_WARNING',4),'8':('MQTT_LOG_ERR',3),'16':('MQTT_LOG_DEBUG',7)}
 
     def __init__(self,channel,logcallback,loglevel=4):
         self.mqttc = paho.Client()
@@ -34,7 +33,7 @@ class MClient():
         else:
             self.options[option]
 
-    def Connect(self,broker=gb._MQTTBroker,port=gb._MQTTPort,heartbeat=60):
+    def Connect(self,broker=Globals._MQTTBroker,port=Globals._MQTTPort,heartbeat=60):
         """function to connect the client to a broker. 
 
             Takes in a broker host/ip, port number and maximum heartbeat period
@@ -66,6 +65,6 @@ class MClient():
             During init of MClient, the logging level can be set, otherwise, it's MQTT_LOG_WARNING by default
             MQTT_LOG_INFO, MQTT_LOG_NOTICE, MQTT_LOG_WARNING, MQTT_LOG_ERR, and MQTT_LOG_DEBUG are the levels of logging
         """
-        ##if MClient._Loglevel[level] <= self.loglevel:
-        self.logcallback({'Description': str(level) + ' message on channel ' + self.channel, 'details':[{'detail':buf}]})
+        if MClient._Loglevel[str(level)][1] <= self.loglevel:
+            self.logcallback({'Description': MClient._Loglevel[str(level)][0] + ' message on channel ' + self.channel, 'details':[{'detail':buf}]})
 

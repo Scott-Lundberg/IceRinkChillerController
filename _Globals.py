@@ -6,3 +6,4 @@ class Globals(object):
     _Database = 'IceRinkController'
     _MQTTBroker = '192.168.112.110'
     _MQTTPort = 1883
+    _MQTTLogLevel = 16

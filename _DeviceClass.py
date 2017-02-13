@@ -10,21 +10,26 @@ class Device(object):
     __metaclass__ = ABCMeta
 
     def __init__(self,dbClient,Name):
-	## Assume that by now we have a connection to the appropriate database
+	"""
+            Assume that by now we have a connection to the appropriate database
+        """
 	self.dbtable = dbTable(dbClient,'Devices')
 	self.loaded = False
         self.stopread = False
 	self.LoadDevice(Name)
         self.log = Logger(dbClient,self.Props['collection'])
-
+        self.validinterface = False
 
     @abstractmethod
     def ValidateDevice(self):
-        ' Overridden method to make sure that our device has all properties required to operate'
+        """Overridden method to make sure that our device has all properties required to operate"""
         pass
 
     def CreateDevice(self,minProps):
-        ' CreateDevice:  Creates a new device in memory.  Parameter minProps is a dictionary that contains the minimum properties required to create a device, typically a Name'
+        """CreateDevice:  Creates a new device in memory.  
+        
+            Parameter minProps is a dictionary that contains the minimum properties required to create a device, typically a Name
+        """
         if minProps.has_key('_id'): 
             del minProps['_id'] 
 	if not self.loaded:
@@ -42,7 +47,7 @@ class Device(object):
             return self.ChangeProperty(minProps)
 
     def RemoveDevice(self):
-        ' Removes a device from the system.  Just sets active to False in the Properties '
+        """Removes a device from the system.  Just sets active to False in the Properties"""
         if self.loaded:
             self.ChangeProperty({'Active': False})
             self.SaveDevice()
@@ -57,7 +62,7 @@ class Device(object):
             Currently supports I2C and GPIO.  Dictionary items must be as follows:
             I2C{'type':'I2C', 'address':'<Hex string of address of device>', 'bus':'<bus number', 'signedint':'<True/False>', 'numberofbits': '##'}
             GPIO{'type': 'GPIO', 'header':'<P9 or P8>', 'pin':'<pin number>', 'IODirection': '<OUT|IN>'}
-            """
+        """
         self.Props['IOInterface'] = interface
         self.SaveDevice()
 
@@ -84,6 +89,7 @@ class Device(object):
         """
         loopcounter = count-1
         readbyte=0
+        self.stopread=False
         while loopcounter <> 0 and not self.stopread:
             if self.Props['IOInterface']['type'] == 'I2C':
                 self.interface.readS8(readbyte)
@@ -95,8 +101,7 @@ class Device(object):
                 time.sleep(waittime/1000) 
 
     def StopRead(self):
-        """Sets self.stopread to True so that any sensor reading loops will stop
-        """
+        """Sets self.stopread to True so that any sensor reading loops will stop """
         self.stopread = True
         self.ClearInterface()
 
@@ -138,6 +143,7 @@ class Device(object):
             return True
 
     def SaveDevice(self):
+        """Writes all configured properties to the database for future loading"""
         temp = self.Props.copy()
         if temp.has_key('_id'):
             del temp['_id']
