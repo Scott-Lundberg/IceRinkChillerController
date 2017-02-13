@@ -15,8 +15,8 @@ class Sensor(Device):
         super(Sensor, self).__init__(dbClient,Name)
         self.cycletime = cycletime
         self.mode = mode
-        self.mqtt = MClient('/' + Globals._PlantName + '/Sensors/' + Name, self.LogEntry)
-
+        self.mqttc = MClient('/' + Globals._PlantName + '/Sensors/' + Name, self.LogError)
+        self.mqttc.Connect()
 
     def ValidateDevice(self):
         """method to make sure the sensor has all that is needed to operate.  Interface to hardware, logging, etc"""
@@ -44,12 +44,17 @@ class Sensor(Device):
         else:
             if entry.has_key('Error'):
                 logentry = {'Description': 'Error:'+entry['Error']}
-                mqtt = {'Description': 'Error:'+entry['Error']}
+                mqtt = 'Error:'+str(entry['Error'])
             else:
                 self.lastread = entry['data']
                 logentry = {'Description': 'Data Read','details':[{'data':entry['data']}]}
-                mqtt = {'Description': 'Data Read','details':[{'data':entry['data']}], 'DeviceID': self.Props['_id']}
+                mqtt = str(entry['data'])
 
             super(Sensor, self).LogEntry(logentry)
-            print logentry
-        
+            self.mqttc.Send(mqtt)
+
+    def LogError(self,entry):
+        """
+            Logs error information by passing it to the super class
+        """
+        super(Sensor, self).LogEntry(entry)

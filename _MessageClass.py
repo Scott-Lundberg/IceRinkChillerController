@@ -19,7 +19,6 @@ class MClient():
         self.mqttc.on_log = self.WriteLog
         self.logcallback = logcallback
 
-
     def SetOptions(self,options):
         """Sets options to be used later in MQTT client.  
 
@@ -30,7 +29,10 @@ class MClient():
 
     def GetOption(self,option,default):
         """Returns option if set, default if not set or key doesn't exist"""
-        return default if not self.options.has_key(option) else self.options[option]
+        if not self.options.has_key(option):
+            return default
+        else:
+            self.options[option]
 
     def Connect(self,broker=gb._MQTTBroker,port=gb._MQTTPort,heartbeat=60):
         """function to connect the client to a broker. 
@@ -64,6 +66,6 @@ class MClient():
             During init of MClient, the logging level can be set, otherwise, it's MQTT_LOG_WARNING by default
             MQTT_LOG_INFO, MQTT_LOG_NOTICE, MQTT_LOG_WARNING, MQTT_LOG_ERR, and MQTT_LOG_DEBUG are the levels of logging
         """
-        if MClient._Loglevel(level) <= self.loglevel:
-            self.logcallback({'Description': level + ' message on channel ' + self.channel, 'details':[buf]})
+        ##if MClient._Loglevel[level] <= self.loglevel:
+        self.logcallback({'Description': str(level) + ' message on channel ' + self.channel, 'details':[{'detail':buf}]})
 
