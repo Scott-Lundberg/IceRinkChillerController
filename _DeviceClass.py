@@ -4,6 +4,7 @@ from abc import ABCMeta, abstractmethod
 from Adafruit_I2C import Adafruit_I2C
 import Adafruit_BBIO.GPIO as GPIO
 import Adafruit_BBIO.PWM as PWM
+import Adafruit_BBIO.ADC as ADC
 
 class Device(object):
     """Base class that is used for all sensors, relay and the controller itself"""
@@ -62,6 +63,7 @@ class Device(object):
             Currently supports I2C and GPIO.  Dictionary items must be as follows:
             I2C{'type':'I2C', 'address':'<Hex string of address of device>', 'bus':'<bus number', 'signedint':'<True/False>', 'numberofbits': '##'}
             GPIO{'type': 'GPIO', 'header':'<P9 or P8>', 'pin':'<pin number>', 'IODirection': '<OUT|IN>'}
+            ADC{'type': 'ADC', 'header':'<P9 or P8>', 'pin':'<pin number>'}
         """
         self.Props['IOInterface'] = interface
         self.SaveDevice()
@@ -75,6 +77,10 @@ class Device(object):
         elif self.Props['IOInterface']['type'] == 'GPIO':
             self.interface = self.Props['IOInterface']['header']+'_'+str(self.Props['IOInterface']['pin'])
             GPIO.setup(self.interface, eval('GPIO.'+self.Props['IOInterface']['IODirection']))
+
+        elif self.Props['IOInterface']['type'] == 'ADC':
+            self.interface = self.Props['IOInterface']['header']+'_'+str(self.Props['IOInterface']['pin'])
+            ADC.setup()
 
         elif self.Props['IOInterface']['type'] == '1-Wire':
             pass  ##TBD
@@ -96,6 +102,8 @@ class Device(object):
                 callback({'data': [readbyte]})
             elif self.Props['IOInterface']['type'] == 'GPIO':
                 callback({'data': GPIO.input(self.interface)})
+            elif self.Props['IOInterface']['type'] == 'ADC':
+                callback({'data': str(ADC.read(self.interface))})
             loopcounter -= 1
             if waittime <> 0:
                 time.sleep(waittime/1000) 
