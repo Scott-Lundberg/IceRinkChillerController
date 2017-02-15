@@ -1,5 +1,6 @@
 from _DatabaseClass import *
 from _LoggingClass import *
+from _Globals import *
 from abc import ABCMeta, abstractmethod
 from Adafruit_I2C import Adafruit_I2C
 import Adafruit_BBIO.GPIO as GPIO
@@ -10,7 +11,7 @@ class Device(object):
     """Base class that is used for all sensors, relay and the controller itself"""
     __metaclass__ = ABCMeta
 
-    def __init__(self,dbClient,Name):
+    def __init__(self,Name,dbClient=Globals._dbClient):
 	"""
             Assume that by now we have a connection to the appropriate database
         """

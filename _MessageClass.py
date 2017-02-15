@@ -10,13 +10,13 @@ class MClient():
     """
     _Loglevel = {'1':('MQTT_LOG_INFO',6), '2': ('MQTT_LOG_NOTICE',5), '4':('MQTT_LOG_WARNING',4),'8':('MQTT_LOG_ERR',3),'16':('MQTT_LOG_DEBUG',7)}
 
-    def __init__(self,channel,logcallback,loglevel=4):
+    def __init__(self,channel,dbClient=Globals._dbClient,loglevel=4):
         self.mqttc = paho.Client()
         self.options = {}
         self.channel = channel
         self.loglevel = loglevel
         self.mqttc.on_log = self.WriteLog
-        self.logcallback = logcallback
+        self.log = Logger(dbClient,Globals._MessageLog)
 
     def SetOptions(self,options):
         """Sets options to be used later in MQTT client.  
@@ -66,5 +66,5 @@ class MClient():
             MQTT_LOG_INFO, MQTT_LOG_NOTICE, MQTT_LOG_WARNING, MQTT_LOG_ERR, and MQTT_LOG_DEBUG are the levels of logging
         """
         if MClient._Loglevel[str(level)][1] <= self.loglevel:
-            self.logcallback({'Description': MClient._Loglevel[str(level)][0] + ' message on channel ' + self.channel, 'details':[{'detail':buf}]})
+            self.log.LogEntry({'Description': MClient._Loglevel[str(level)][0] + ' message on channel ' + self.channel, 'details':[{'detail':buf}]})
 

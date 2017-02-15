@@ -7,24 +7,18 @@ from bson.objectid import ObjectId
 class SystemDB(object):
 	'Class to implement a database for use for settings and logging'
 
-	_dbclient = None
-	_db = None
-        gb = Globals()
+	def __init__(self,interface=Globals._DBInterface,port=Globals._DBPort):
+            self.dbClient = MongoClient(interface,port)
 
-	def __init__(self,interface=gb._DBInterface,port=gb._DBPort):
-		if SystemDB._dbclient == None:	
-			SystemDB._dbclient = MongoClient(interface,port)
-
-	def AttachDatabase(self,database=gb._Database):
-		if SystemDB._db == None:
-			SystemDB._db = SystemDB._dbclient[database]
+	def AttachDatabase(self,database=Globals._Database):
+            self.db = self.dbClient[database]
 
 	def DropDatabase(self):
-		if SystemDB._db <> None:
-			SystemDB._dbclient.drop_database(SystemDB._db)
+            if isinstance(SystemDB,self.db):
+                self.bClient.drop_database(self.db)
 	
 	def ConnectionValid(self):
-		return (True if _dbclient <> None else False)
+            return (True if self.dbClient <> None else False)
 
 class dbTable:
 	"""Class that implements collections/tables, including inserts, updates, selects.  Requires SystemDB object exists."""
@@ -38,7 +32,7 @@ class dbTable:
 		
 	def __init__(self,dbclient,collection):
 		self.dbclient = dbclient
-		self.collection = self.dbclient._db[collection]
+		self.collection = self.dbclient.db[collection]
 
 	def InsertOne(self,record):
 		return self.collection.insert_one(record).inserted_id

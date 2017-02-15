@@ -8,12 +8,12 @@ class Sensor(Device):
     """Class that implements any kind of sensor with a base class of Device. """
 
 
-    def __init__(self, dbClient, Name, cycletime, mode='event'):
+    def __init__(self, Name, cycletime,dbClient=Globals._dbClient, mode='event'):
         """mode can be either polling or event driven.  If event driven, will only send data
             when the data being measured changes, up to the cycletime or to processor limits
             If using polling method, the cycletime will be used to take a sample cycletime/second
         """
-        super(Sensor, self).__init__(dbClient,Name)
+        super(Sensor, self).__init__(Name,dbClient)
         self.cycletime = cycletime
         self.mode = mode
         self.mqttc = MClient('/' + Globals._PlantName + '/Sensors/' + Name, self.LogError, Globals._MQTTLogLevel)

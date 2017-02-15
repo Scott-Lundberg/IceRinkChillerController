@@ -1,5 +1,6 @@
 import time
 from _DatabaseClass import *
+from _Globals import *
 
 class Logger:
 	'Class that provides logging to database structures.  '
@@ -8,7 +9,7 @@ class Logger:
 	#Format of timestamps should be consistent, always
 	_timeFormat = "%a, %d %b %Y %H:%M:%S " + str((time.timezone if time.daylight == 0 else time.altzone) * 100 / 60 )
 		
-	def __init__(self,dbclient,collection):
+	def __init__(self,collection,dbclient=Globals._dbClient):
             """
             Creates a Logging object to be used for database recording of data
                 
