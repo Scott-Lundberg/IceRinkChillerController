@@ -60,8 +60,3 @@ class Sensor(Device):
             super(Sensor, self).LogEntry(logentry)
             self.mqttc.Send(mqtt)
 
-    def LogError(self,entry):
-        """
-            Logs error information by passing it to the super class
-        """
-        super(Sensor, self).LogEntry(entry)

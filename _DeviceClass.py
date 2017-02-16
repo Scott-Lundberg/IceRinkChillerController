@@ -65,6 +65,7 @@ class Device(object):
             I2C{'type':'I2C', 'address':'<Hex string of address of device>', 'bus':'<bus number', 'signedint':'<True/False>', 'numberofbits': '##'}
             GPIO{'type': 'GPIO', 'header':'<P9 or P8>', 'pin':'<pin number>', 'IODirection': '<OUT|IN>'}
             ADC{'type': 'ADC', 'header':'<P9 or P8>', 'pin':'<pin number>'}
+            PWM{'type': 'PWM', 'header':'<P9 or P8>', 'pin':'<pin number>', 'frequency': 'hz'}
         """
         self.Props['IOInterface'] = interface
         self.SaveDevice()
@@ -82,6 +83,9 @@ class Device(object):
         elif self.Props['IOInterface']['type'] == 'ADC':
             self.interface = self.Props['IOInterface']['header']+'_'+str(self.Props['IOInterface']['pin'])
             ADC.setup()
+
+        elif self.Props['IOInterface']['type'] == 'PWM':
+            self.interface = self.Props['IOInterface']['header']+'_'+str(self.Props['IOInterface']['pin'])
 
         elif self.Props['IOInterface']['type'] == '1-Wire':
             pass  ##TBD
@@ -127,6 +131,10 @@ class Device(object):
         """
         if self.Props['IOInterface']['type'] == 'GPIO':
             GPIO.cleanup()
+        elif self.Props['IOInterface']['type'] == 'PWM':
+            PWM.stop(self.interface)
+            PWM.cleanup()
+
         self.interface = None
  	
     def ChangeProperty(self, changingProps):

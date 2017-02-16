@@ -7,5 +7,5 @@ class Globals(object):
     _Database = 'IceRinkController'
     _MQTTBroker = '192.168.112.111'
     _MQTTPort = 1883
-    _MQTTLogLevel = 16
+    _MQTTLogLevel = 4
     _MessageLog = 'MQTT'
