@@ -9,14 +9,14 @@ class Logger:
 	#Format of timestamps should be consistent, always
 	_timeFormat = "%a, %d %b %Y %H:%M:%S " + str((time.timezone if time.daylight == 0 else time.altzone) * 100 / 60 )
 		
-	def __init__(self,collection,dbclient=Globals._dbClient):
+	def __init__(self,collection):
             """
             Creates a Logging object to be used for database recording of data
                 
             dbclient is a reference to an instantiated database object 
             """
-            self.dbHeaderTable = dbTable(dbclient,collection)
-            self.dbDetailTable = dbTable(dbclient,collection+'Detail')
+            self.dbHeaderTable = dbTable(collection)
+            self.dbDetailTable = dbTable(collection+'Detail')
 
 	def LogEntry(self,entry):
             """

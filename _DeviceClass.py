@@ -11,15 +11,15 @@ class Device(object):
     """Base class that is used for all sensors, relay and the controller itself"""
     __metaclass__ = ABCMeta
 
-    def __init__(self,Name,dbClient=Globals._dbClient):
+    def __init__(self,Name):
 	"""
             Assume that by now we have a connection to the appropriate database
         """
-	self.dbtable = dbTable(dbClient,'Devices')
+	self.dbtable = dbTable('Devices')
 	self.loaded = False
         self.stopread = False
 	self.LoadDevice(Name)
-        self.log = Logger(dbClient,self.Props['collection'])
+        self.log = Logger(self.Props['collection'])
         self.validinterface = False
 
     @abstractmethod
@@ -157,5 +157,7 @@ class Device(object):
         if temp.has_key('_id'):
             del temp['_id']
         result = self.dbtable.UpdateOne({'_id': self.Props['_id']},temp)
+        if not isinstance(result,pymongo.results.UpdateResult):
+            return False
         return (True if result.modified_count > 0 else False)
 	
