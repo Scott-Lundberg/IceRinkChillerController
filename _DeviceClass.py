@@ -113,6 +113,10 @@ class Device(object):
             if waittime <> 0:
                 time.sleep(waittime/1000) 
 
+    def WriteInterface(self,buf):
+        """Writes data received in incoming dictionary, buf to the configured interface"""
+        pass
+
     def StopRead(self):
         """Sets self.stopread to True so that any sensor reading loops will stop """
         self.stopread = True

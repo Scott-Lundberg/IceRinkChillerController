@@ -22,15 +22,34 @@ class Control(Device):
 
         return isvalid
 
-    def WriteDevice(self,buf):
-        """Writes the buf to the device.  Normally 1 or 0"""
+    def WriteRelay(self,onoff='off'):
+        """sets relay to on or off. String verison"""
+        if onoff == 'on' or onoff=='1' or onoff=='yes' or onoff=='Yes':
+            self.WriteInterface({'type':'GPIO','action':1})
+        else:
+            self.WriteInterface({'type':'GPIO','action':0})
+
+    def WriteRelay(self,onoff=False):
+        """sets relay to on or off. boolean verison"""
+        if onoff == True:
+            self.WriteInterface({'type':'GPIO','action':1})
+        else:
+            self.WriteInterface({'type':'GPIO','action':0})
+
+    def WriteRelay(self,onoff=0):
+        """sets relay to on or off. int verison"""
+        if onoff == 1:
+            self.WriteInterface({'type':'GPIO','action':1})
+        else:
+            self.WriteInterface({'type':'GPIO','action':0})
+
 
     def LogEntry(self,entry):
         """
             Incoming data can be either Errors or data.  
             Typically takes raw data from a ReadInterface callback and puts it into a Loggable/MQTT format
         """
-        if entry.has_key('Error'):
+       if entry.has_key('Error'):
             logentry = {'Description': 'Error:'+entry['Error']}
             mqtt = 'Error:'+str(entry['Error'])
         else:
