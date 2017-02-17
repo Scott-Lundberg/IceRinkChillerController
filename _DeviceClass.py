@@ -115,12 +115,23 @@ class Device(object):
 
     def WriteInterface(self,buf):
         """Writes data received in incoming dictionary, buf to the configured interface"""
-        pass
+        if self.Props['IOInterface']['type'] == 'GPIO':
+            GPIO.output(self.inteface,buf['action'])
+        elif self.Props['IOInterface']['type'] == 'PWM':
+            PWM.start(self.interface,buf['duty'],buf['freq'],buf['polarity'])
 
     def StopRead(self):
         """Sets self.stopread to True so that any sensor reading loops will stop """
         self.stopread = True
         self.ClearInterface()
+
+    def StopWrite(self):
+        """Turns interface to off"""
+        if self.Props['IOInterface']['type'] == 'GPIO':
+            GPIO.output(self.inteface,0)
+        elif self.Props['IOInterface']['type'] == 'PWM':
+            PWM.stop(self.interface)
+            PWM.cleanup()
 
     def LogEntry(self,entry):
         """Make a log entry for this Device

@@ -1,5 +1,6 @@
 from _Globals import *
 from _DeviceClass import *
+from _MessageClass import *
 
 
 class Control(Device):
@@ -7,7 +8,7 @@ class Control(Device):
 
     def __init__(self, Name):
 
-        super(Control, self).__init(Name)
+        super(Control, self).__init__(Name)
         self.mqttc = MClient('/' + Globals._PlantName + '/Controls/' + Name, Globals._MQTTLogLevel)
         self.mqttc.Connect()
 
@@ -22,6 +23,11 @@ class Control(Device):
 
         return isvalid
 
+    def Subscribe(self,callback):
+        """Setup subscription to MQTT channel with callback when message received"""
+        self.mqttc.Receive(callback)
+
+
     def WriteRelay(self,onoff='off'):
         """sets relay to on or off. String verison"""
         if onoff == 'on' or onoff=='1' or onoff=='yes' or onoff=='Yes':
@@ -32,16 +38,20 @@ class Control(Device):
     def WriteRelay(self,onoff=False):
         """sets relay to on or off. boolean verison"""
         if onoff == True:
-            self.WriteInterface({'type':'GPIO','action':1})
+            self.WriteInterface({'action':1})
         else:
-            self.WriteInterface({'type':'GPIO','action':0})
+            self.WriteInterface({'action':0})
 
     def WriteRelay(self,onoff=0):
         """sets relay to on or off. int verison"""
         if onoff == 1:
-            self.WriteInterface({'type':'GPIO','action':1})
+            self.WriteInterface({'action':1})
         else:
-            self.WriteInterface({'type':'GPIO','action':0})
+            self.WriteInterface({'action':0})
+
+    def WritePWM(self,duty=50,freq=1000,polarity=1):
+        """Starts the output with duty, freq and polarity"""
+        self.WriteInterface({'duty':duty,'freq':freq,'polarity':polarity})
 
 
     def LogEntry(self,entry):
@@ -49,7 +59,7 @@ class Control(Device):
             Incoming data can be either Errors or data.  
             Typically takes raw data from a ReadInterface callback and puts it into a Loggable/MQTT format
         """
-       if entry.has_key('Error'):
+        if entry.has_key('Error'):
             logentry = {'Description': 'Error:'+entry['Error']}
             mqtt = 'Error:'+str(entry['Error'])
         else:
