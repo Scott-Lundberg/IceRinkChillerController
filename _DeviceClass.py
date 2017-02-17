@@ -93,11 +93,18 @@ class Device(object):
         elif self.Props['IOInterface']['type'] == 'SPI':
             pass  ##TBD
 
-    def ReadInterface(self,count,waittime,valuestoread,callback):
-        """Starts a loop with count times (0 for infinity) and a waittime between reads
+    def ReadInterface(self,count,waittime,valuestoread,callback,cycletime):
+        """Starts a loop with count times (0 for infinity) and a waittime between reads, up to a maximum of cycletime per second
 
             Needs callback function to deliver results.  Parameters to callback are just the data
         """
+
+        ## We have a minimum sample speed to keep the processor from being overloaded by one sensor.
+        if (waittime) > cycletime:
+            calculatedwait = waittime
+        else:
+            calculatedwait = cycletime
+
         loopcounter = count-1
         readbyte=0
         self.stopread=False
@@ -111,12 +118,15 @@ class Device(object):
                 callback({'data': str(ADC.read(self.interface))})
             loopcounter -= 1
             if waittime <> 0:
-                time.sleep(waittime/1000) 
+                time.sleep(calculatedwait/1000) 
 
     def WriteInterface(self,buf):
         """Writes data received in incoming dictionary, buf to the configured interface"""
         if self.Props['IOInterface']['type'] == 'GPIO':
-            GPIO.output(self.inteface,buf['action'])
+            if buf['action']==1:
+                GPIO.output(self.interface,GPIO.HIGH)
+            else:
+                GPIO.output(self.interface,GPIO.LOW)
         elif self.Props['IOInterface']['type'] == 'PWM':
             PWM.start(self.interface,buf['duty'],buf['freq'],buf['polarity'])
 
@@ -128,7 +138,7 @@ class Device(object):
     def StopWrite(self):
         """Turns interface to off"""
         if self.Props['IOInterface']['type'] == 'GPIO':
-            GPIO.output(self.inteface,0)
+            GPIO.output(self.interface,0)
         elif self.Props['IOInterface']['type'] == 'PWM':
             PWM.stop(self.interface)
             PWM.cleanup()
