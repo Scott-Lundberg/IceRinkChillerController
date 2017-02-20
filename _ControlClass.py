@@ -29,25 +29,18 @@ class Control(Device):
 
 
     def WriteRelay(self,onoff='off'):
-        """sets relay to on or off. String verison"""
-        if onoff == 'on' or onoff=='1' or onoff=='yes' or onoff=='Yes':
-            self.WriteInterface({'type':'GPIO','action':1})
-        else:
-            self.WriteInterface({'type':'GPIO','action':0})
-
-    def WriteRelay(self,onoff=False):
-        """sets relay to on or off. boolean verison"""
-        if onoff == True:
-            self.WriteInterface({'action':1})
-        else:
-            self.WriteInterface({'action':0})
-
-    def WriteRelay(self,onoff=0):
-        """sets relay to on or off. int verison"""
-        if onoff == 1:
-            self.WriteInterface({'action':1})
-        else:
-            self.WriteInterface({'action':0})
+        """sets relay to on or off."""
+        action=0
+        if isinstance(onoff,str):
+            if onoff == 'on' or onoff=='1' or onoff=='yes' or onoff=='Yes':
+                action=1
+        elif isinstance(onoff,bool):
+            if onoff:
+                action=1
+        elif isinstance(onoff,int):
+            if onoff > 0:
+                action=1
+        self.WriteInterface({'type':'GPIO','action':action})
 
     def WritePWM(self,duty=50,freq=1000,polarity=1):
         """Starts the output with duty, freq and polarity"""
@@ -69,3 +62,7 @@ class Control(Device):
         super(Control, self).LogEntry(logentry)
         self.mqttc.Send(mqtt)
 
+    def StopWrite(self):
+        """Tears down connection to MQTT broker then calls the hardware (Device) StopWrite to tear down hardware"""
+        self.mqttc.Disconnect()
+        super(Control, self).StopWrite()

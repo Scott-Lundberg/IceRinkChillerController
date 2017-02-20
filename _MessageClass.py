@@ -52,6 +52,7 @@ class MClient():
         
             callback requires 3 parameters: client,userdata, message (object) """
         self.mqttc.subscribe(self.channel,self.GetOption("qos",0))
+        self.mqttc.on_message=callback
         self.mqttc.message_callback_add(self.channel,callback)
 
     def Disconnect(self):

@@ -60,3 +60,7 @@ class Sensor(Device):
             super(Sensor, self).LogEntry(logentry)
             self.mqttc.Send(mqtt)
 
+    def StopRead(self):
+        """Stops mqtt loop by disconnecting, then calls _DeviceClass StopRead to stop the hardware"""
+        self.mqttc.Disconnect()
+        super(Sensor, self).StopRead()
