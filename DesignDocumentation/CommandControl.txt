@@ -1,0 +1,33 @@
+class CommandControl:
+	"""
+	Creates a command and control structure to be used between multiple BBB, each with their own responsibilities
+
+	creates the user interface (ideally through a webpage) and allows logging to be exported out.
+	Each system can be the master or a slave
+	"""
+	
+	FindOtherBBB(ipaddress=255.255.255.255):
+		"""
+		Finds other BBBs on the locally configured network.  If passed in an IP address, will query that specific IP
+		"""
+	
+	
+	StartElection():
+		"""
+		Decides based on detected BBBs who is going to be the command and control master
+		"""
+		
+	StartBroker():	
+		"""
+		Starts MQTT broker so other BBBs can subscribe and publish messages
+		"""
+		
+	SendCommand(channel):
+		"""
+		Sends MQTT message to channel as a command to a "slaved" BBB
+		"""
+		
+	
+		
+	
+	
