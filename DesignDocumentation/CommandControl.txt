@@ -9,8 +9,7 @@ class CommandControl:
 	FindOtherBBB(ipaddress=255.255.255.255):
 		"""
 		Finds other BBBs on the locally configured network.  If passed in an IP address, will query that specific IP
-		"""
-	
+		"""	
 	
 	StartElection():
 		"""
@@ -27,7 +26,8 @@ class CommandControl:
 		Sends MQTT message to channel as a command to a "slaved" BBB
 		"""
 		
-	
+	UpdateWebPage():
+		"""
+		Updates the webpage with sensor changes etc based on incoming MQTT messages
+		"""
 		
-	
-	
