@@ -24,7 +24,7 @@ Table Sensor:
 	AbbUnitOfMeasure	char(3)	
 	
 Table Relay:
-	RelayID Intege	r Keyfield
+	RelayID Integer Keyfield
 	DeviceID Integer (foreign key in Device Table)
 	NormallyOpen Boolean
 	TotalRunTime Float

@@ -1,5 +1,6 @@
 dependencies 
 
+Github for downloading IceRinkController code
 paho.mqtt.python
 mosquitto (only on the main controller)
 libwebsockets
