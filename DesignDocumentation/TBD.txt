@@ -1,6 +1,6 @@
 _MessageClass 
 	Create CA and assign certificates to clients
-	Figure out a way to do a logging call back so we don't create a new object within the Message class
+	Done***  Figure out a way to do a logging call back so we don't create a new object within the Message class
 	
 _DeviceClass
 	Remove requirement for _DatabaseClass being included.  All db functions should be done via passed in object
