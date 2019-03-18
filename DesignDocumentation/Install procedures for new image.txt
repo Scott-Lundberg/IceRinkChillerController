@@ -1,0 +1,16 @@
+git clone https://github.com/Scott-Lundberg/IceRinkChillerController.git
+sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+echo "deb http://repo.mongodb.org/apt/debian stretch/mongodb-org/4.0 main" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+sudo apt-get install python-pymongo
+sudo apt-get install python-pip
+sudo pip install paho-mqtt
+
+
+
+debian@beaglebone:~$ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+Executing: /tmp/apt-key-gpghome.Z1KV1nwgfz/gpg.1.sh --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
+gpg: failed to start the dirmngr '/usr/bin/dirmngr': No such file or directory
+gpg: connecting dirmngr at '/tmp/apt-key-gpghome.Z1KV1nwgfz/S.dirmngr' failed: No such file or directory
+gpg: keyserver receive failed: No dirmngr
